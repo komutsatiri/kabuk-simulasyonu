@@ -1,64 +1,61 @@
-#include <stdlib.h>
+
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/types.h>
-int execReturn;
+int exec;
 
 int main()
 {	
-	
-	int forkPid=9;  
 	//Program başlangıcında bir kereliğine 
-	//komut girdirebilmeyi sağlamak için forkPid değişkenine sıfırdan büyük değer verildi
-	char path[256];
-	pid_t pid_w;
-	int statu;
+	//komut girdirebilmeyi sağlamak için fork_pid değişkenine sıfırdan büyük değer verildi
+	int fork_pid=9;
+	int pid_w,statu;
+	char path[100];
 
-	do
+	//exec değişkeni statik,her seferinde değeri 0 olarak güncelleniyor
+	//Döngünün sürekliliği  için exec değişkeninin 0 değerini alması da dahil edildi
+	//Girilen komut işlenmez ise exec, -1 değerini alıyor
+	while(!(exec>0))
 	{
 		
 		//Sadece ebevyen proses tarafından çalıştırılsın.
-		if(forkPid > 0)
+		if(fork_pid > 0)
 		{	
 			printf("Komut giriniz> ");
 			scanf("%s",path);
 		}
 		
-		forkPid=fork();
+		fork_pid=fork();
 		//fork() yavru proses için 0 değerini döndürürken
 		//ebeveyn proses için yavru proses PID değeri döndürür.
 	
 		
-		if(forkPid == 0) 
+		if(fork_pid < 0) 
+		{
+			printf("Fork sırasında hata oluştu \n");
+		}	
+		else if(fork_pid == 0) 
 		{
 			//yavru proses tarafından işletilecek komutlar			
-			execReturn=execlp(path,path,NULL);
+			exec=execlp(path,path,NULL);
 		
-			if(execReturn==-1)
+			if(exec==-1)
 			{	
 				printf("Komut ya da söz dizimi hatalı !\n");
 			}	
 		
 			exit(0);
-			
 		}	
-		else if(forkPid > 0)
+		else
 		{
 			//ebeyevn proses tarafıdan işletilecek komutlar
-			pid_w=waitpid(forkPid,&statu,0);
+			pid_w=waitpid(fork_pid,&statu,0);
 			//ebeveyn proses içinde forkPid değeri, yavru proses PID olarak döndürülür.  
 
 		}
-		else 
-		{
-			printf("Fork sırasında hata oluştu \n");
-		}	
-		 	
-		
 	}
-	while(execReturn==-1||execReturn==0);
-	//execReturn değişkeni statik tanımlandığı için değeri 0 olarak güncelleniyor
-	//Döngünün devamlılığı için execReturn değişkeninin 0 değerini alması da dahil edildi
-
+	
+	
 }
