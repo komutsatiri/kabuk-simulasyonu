@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/wait.h>
@@ -5,51 +6,59 @@
 int execReturn;
 int main()
 {
-	int pid,forkPid,childPid;
+	int forkPid=9;  
+	//Program başlangıcında bir kereliğine komut girdirebilmeyi sağlamak için
 	char path[256];
 	pid_t pid_w;
 	int statu;
 	do
 	{
 		execReturn=0;
-		printf("Komut giriniz> ");
-		scanf("%s",path);
+
+		if(forkPid > 0)
+		{	
+			printf("Komut giriniz> ");
+			scanf("%s",path);
+		}
 		
-		pid=getpid();
-		printf("\nEbeveyn proses id: %d\n\n",pid );
+		//printf("\nEbeveyn proses id: %d\n\n",getpid() );
 		printf("\nProses çatallanıyor....  \n");
 		forkPid=fork();
-		printf("\nforkPid : %d\n",forkPid);
+		//yavru proses için 0 değeri döndürülürken
+		//ebeveyn proses için yavru proses PID değeri döndürülür
+	
 		
-
-
 		if(forkPid == 0) 
 		{
 			//yavru proses tarafından işletilecek komutlar			
 			printf("\nYavru proses alanı \n");
-			childPid=getpid();
-			printf("Yavru proses id: %d\n",childPid );
+			//childPid=getpid();
+			printf("Yavru proses id: %d\n",getpid() );
 	
 			printf("Şimdi komut işletilecek....\n");
+			//pause(); 
+
 			execReturn=execlp(path,path,NULL);
+
 			if(execReturn==-1)
 				printf("İşletilemedi.\n");
-			exit(3);
-				
+			else
+				printf("İşletldi\n");
+
+			exit(0);
 			
-			//while(1);
 		}	
 		else if(forkPid > 0)
 		{
 			//ebeyevn proses tarafıdan işletilecek komutlar 
 			printf("\nEbeveyn proses alanı \n");
-
 			printf("Ebeveyn proses id: %d\n",getpid());
-			pid_w=waitpid(forkPid,&statu,WIFEXITED(statu));
-			printf("Sonlanan proses id :%d\n",pid_w );
-			if(WIFSTOPPED(statu))
-				printf("Stopped by signal:=%d\n",WSTOPSIG(statu) );
-			//while(1);
+			pid_w=waitpid(forkPid,&statu,0);
+			//forkPid = yavru proses  PID
+			if(pid_w > 0)
+				printf("Sonlanan proses id :%d\n",pid_w );
+			
+			
 
 		}
 		else 
@@ -57,7 +66,7 @@ int main()
 			printf("Fork sırasında hata oluştu \n");
 		}	
 		
-		printf("Exec dönüş değeri: %d\n",execReturn );
+		//printf("Exec dönüş değeri: %d\n",execReturn );
 		
 		if(execReturn == -1)
 			printf("Komut ya da söz dizimi hatalı !\n");
