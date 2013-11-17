@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -46,7 +45,7 @@ int main()
 				printf("Komut ya da söz dizimi hatalı !\n");
 			}	
 		
-			exit(0);
+			exit(EXIT_SUCCESS);
 		}	
 		else
 		{
