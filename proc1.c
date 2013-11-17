@@ -41,10 +41,11 @@ int main()
 			execReturn=execlp(path,path,NULL);
 
 			if(execReturn==-1)
+			{	
 				printf("İşletilemedi.\n");
-			else
-				printf("İşletldi\n");
-
+				printf("Komut ya da söz dizimi hatalı !\n");
+			}	
+		
 			exit(0);
 			
 		}	
@@ -55,6 +56,7 @@ int main()
 			printf("Ebeveyn proses id: %d\n",getpid());
 			pid_w=waitpid(forkPid,&statu,0);
 			//forkPid = yavru proses  PID
+
 			if(pid_w > 0)
 				printf("Sonlanan proses id :%d\n",pid_w );
 			
@@ -65,17 +67,10 @@ int main()
 		{
 			printf("Fork sırasında hata oluştu \n");
 		}	
-		
-		//printf("Exec dönüş değeri: %d\n",execReturn );
-		
-		if(execReturn == -1)
-			printf("Komut ya da söz dizimi hatalı !\n");
+		 	
+			
 	}
 	while(execReturn==-1||execReturn==0);
 		
-
-
-
-	
 
 }
