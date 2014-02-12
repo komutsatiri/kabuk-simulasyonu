@@ -1,29 +1,27 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/wait.h>
-#include <sys/types.h>
+
+#include "proc1.h"
 int exec;
 
 int main()
 {	
 	//Program başlangıcında bir kereliğine 
-	//komut girdirebilmeyi sağlamak için fork_pid değişkenine sıfırdan büyük değer verildi
-	int fork_pid=9;
+	//komut girdirebilmeyi sağlamak için fork_pid değişkenine sıfırdan büyük  değer verildi
+	//1 değeri init prosesine ait olduğu için bu PID'nin bir proses verilmesi mümkün değildir.
+	int fork_pid=1;
 	int pid_w,statu;
-	char path[100];
+	char executable_path[60];
 
 	//exec değişkeni statik,her seferinde değeri 0 olarak güncelleniyor
 	//Döngünün sürekliliği  için exec değişkeninin 0 değerini alması da dahil edildi
 	//Girilen komut işlenmez ise exec, -1 değerini alıyor
-	while(!(exec>0))
+	while(1)
 	{
 		
 		//Sadece ebevyen proses tarafından çalıştırılsın.
 		if(fork_pid > 0)
 		{	
 			printf("Komut giriniz> ");
-			scanf("%s",path);
+			scanf("%s",executable_path);
 		}
 		
 		fork_pid=fork();
@@ -38,7 +36,9 @@ int main()
 		else if(fork_pid == 0) 
 		{
 			//yavru proses tarafından işletilecek komutlar			
-			exec=execlp(path,path,NULL);
+			exec=execlp(executable_path,executable_path,NULL);
+
+			
 		
 			if(exec==-1)
 			{	
@@ -49,9 +49,10 @@ int main()
 		}	
 		else
 		{
+			
 			//ebeyevn proses tarafıdan işletilecek komutlar
 			pid_w=waitpid(fork_pid,&statu,0);
-			//ebeveyn proses içinde forkPid değeri, yavru proses PID olarak döndürülür.  
+			//fork_pid, yavru prosesi gösteriyor.
 
 		}
 	}
